@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.mapper.DozerMapper;
+import com.example.demo.mapper.custom.PersonMapper;
 import com.example.demo.model.Person;
 import com.example.demo.data.vo.v1.PersonVO;
+import com.example.demo.data.vo.v2.PersonVOV2;
 import com.example.demo.repositories.PersonRepository;
 
 @Service
@@ -19,6 +21,9 @@ public class PersonServices {
 	
 	@Autowired
 	PersonRepository repository;
+
+	@Autowired
+	PersonMapper mapper;
 
 	public List<PersonVO> findAll() {
 
@@ -40,6 +45,14 @@ public class PersonServices {
 		var entity = DozerMapper.parseObject(person, Person.class);
 		var vo = repository.save(entity);
 		return DozerMapper.parseObject(vo, PersonVO.class);
+	}
+	
+	public PersonVOV2 createV2(PersonVOV2 person) {
+
+		logger.info("Creating one person with v2!");
+		var entity = mapper.convertVoToEntity(person);
+		var vo = mapper.convertEntityToVo(repository.save(entity));
+		return vo;
 	}
 	
 	public PersonVO update(PersonVO person) {
